@@ -11,7 +11,7 @@ import {
 } from '../pokemon'
 
 // 🐨 this is going to be our generic asyncReducer
-function pokemonInfoReducer(state, {type, pokemon, error}) {
+function pokemonInfoReducer(state, {type, data, error}) {
   switch (type) {
     case 'pending': {
       // 🐨 replace "pokemon" with "data"
@@ -20,7 +20,7 @@ function pokemonInfoReducer(state, {type, pokemon, error}) {
     case 'resolved': {
       // 🐨 replace "pokemon" with "data" (in the action too!)
       debugger
-      return {status: 'resolved', data: pokemon, error: null}
+      return {status: 'resolved', data, error: null}
     }
     case 'rejected': {
       // 🐨 replace "pokemon" with "data"
@@ -49,8 +49,8 @@ const useAsync = (asyncCallback, initialState, dependencies) => {
     dispatch({type: 'pending'})
 
     promise.then(
-      pokemon => {
-        dispatch({type: 'resolved', pokemon})
+      data => {
+        dispatch({type: 'resolved', data})
       },
       error => {
         dispatch({type: 'rejected', error})
@@ -122,7 +122,7 @@ function PokemonInfo({pokemonName}) {
     [pokemonName],
   )
 
-  const {data, status, error} = state
+  const {data: pokemon, status, error} = state
 
   switch (status) {
     case 'idle':
@@ -132,7 +132,7 @@ function PokemonInfo({pokemonName}) {
     case 'rejected':
       throw error
     case 'resolved':
-      return <PokemonDataView pokemon={data} />
+      return <PokemonDataView pokemon={pokemon} />
     default:
       throw new Error('This should be impossible')
   }

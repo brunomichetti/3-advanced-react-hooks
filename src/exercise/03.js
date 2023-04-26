@@ -4,22 +4,27 @@
 import * as React from 'react'
 
 // 🐨 create your CountContext here with React.createContext
+const CountContext = React.createContext()
 
-// 🐨 create a CountProvider component here that does this:
-//   🐨 get the count state and setCount updater with React.useState
-//   🐨 create a `value` array with count and setCount
-//   🐨 return your context provider with the value assigned to that array and forward all the other props
-//   💰 more specifically, we need the children prop forwarded to the context provider
+const CountProvider = props => {
+  // Este comp va a ser el padre de los que usan el useContext.
+  // Define el estado y lo pasa a los hijos. Notar que retorna el componente CountContext.Provider
+  // Las props que recibe se las pasa a los hijos.
+  const [count, setCount] = React.useState(0)
+
+  return <CountContext.Provider value={[count, setCount]} {...props} />
+}
 
 function CountDisplay() {
-  // 🐨 get the count from useContext with the CountContext
-  const count = 0
+  // Este comp hijo usa el count del contexto que le pasa el padre. Este hijo se encarga de mostrar.
+  const [count] = React.useContext(CountContext)
   return <div>{`The current count is ${count}`}</div>
 }
 
 function Counter() {
-  // 🐨 get the setCount from useContext with the CountContext
-  const setCount = () => {}
+  // Este comp hijo usa la función del contexto que le pasa el padre. Este huhi se encarga de modificar el valor.
+  // Tambien de mostrar texto de incrementar.
+  const [, setCount] = React.useContext(CountContext) // empieza con coma porque quiero el 2do valor
   const increment = () => setCount(c => c + 1)
   return <button onClick={increment}>Increment count</button>
 }
@@ -27,12 +32,10 @@ function Counter() {
 function App() {
   return (
     <div>
-      {/*
-        🐨 wrap these two components in the CountProvider so they can access
-        the CountContext value
-      */}
-      <CountDisplay />
-      <Counter />
+      <CountProvider>
+        <CountDisplay />
+        <Counter />
+      </CountProvider>
     </div>
   )
 }
